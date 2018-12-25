@@ -89,7 +89,9 @@ class initialForm(forms.Form):
 									widget=forms.NumberInput(
 									attrs={'style':'vertical-align: middle;\
 													text-align: center; \
-													border: 0;'})
+													border: 0; \
+													width:100%',
+											'class':'align-self-center mt-1 flex-fill'})
 									)
 
 	preferredoutfit = forms.ChoiceField(label='Preferred Outfit', choices=[('Mermaid','Mermaid'), 
