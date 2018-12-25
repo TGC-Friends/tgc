@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} ~ Welcome to the Gown Connoisseur ~ {% endblock %}
+
+{% block css %}
+	{% include 'statics/css.html' %}
+{% endblock %}
+
+{% block topnavbar %}
+{% endblock %}
+
+{% block content %}
+	<div class='container'>
+		
+				<!-- logo -->
+				<div class="d-flex flex-row justify-content-center my-3">
+					<div class="col-6" style="">
+						<img class="" src="{% static 'images/logoBlack.png' %}" style=" width: 100%;">
+					</div>
+				</div>
+
+				
+				<div class="d-flex flex-row justify-content-center my-3">
+					<div class="col-10">
+						{% csrf_token %}
+						<!-- description -->
+						<p>
+						Hello! WE would like to find out more about your preferences to ensure that you have a wonderful and fulfilling experience with us. This checklist will help to frame an idea of the dream gown that you are looking for. Sit back, relax and enjoy while you take time to ponder on your dream gown!
+						</p>
+
+						<!-- main form -->
+						<div class="border border-dark" style="">
+							<div class="border border-dark text-center font-weight-bold p-2">
+								Personal Information
+							</div>
+
+							<div class="d-flex border border-dark pb-3">
+								
+								<span class="col-6">
+									<div class="m-1">Name of Bride:</div>
+									{{ formfields.bridename}}
+								</span>
+								<span class="col-6">
+									<div class="m-1">Name of Groom:</div>{{ formfields.groomname}}
+								</span>
+								
+							</div>
+
+							<div class="d-flex">
+								<div class="col-3 border border-dark pb-2	">
+									<div class="m-1">Phone:</div>
+									{{ formfields.phonenum}}
+								</div>
+
+								<div class="col-3 border border-dark pb-2">
+									<div class="m-1">Email:</div>
+									{{ formfields.emailfield}}
+								</div>
+
+								<div class="col-6 border border-dark pb-2">
+									<div class="m-1">How did you hear of us?</div>
+									{{ formfields.howdidyouhear}}
+								</div>
+
+							</div>
+
+							<div class="border border-dark text-center font-weight-bold p-2">
+								Event Details
+							</div>
+
+							<div class="d-flex ">
+								
+								<div class="col-3 border border-dark pb-2">
+									<div class="m-1">Event Date</div>
+									{{ formfields.eventdate1}}
+								</div>
+
+								<div class="col-4 border border-dark pb-2">
+									<div class="m-1">Event Type</div>
+									{{ formfields.eventtype1}}
+								</div>
+
+								<div class="col-5 border border-dark pb-2">
+									<div class="m-1">Event Venue</div>
+									{{ formfields.eventvenue1}}
+								</div>
+
+							</div>
+
+							<div class="d-flex">
+								
+								<div class="col-3 border border-dark pb-2">
+									<div class="m-1">Event Date</div>
+									{{ formfields.eventdate2}}
+								</div>
+
+								<div class="col-4 border border-dark pb-2">
+									<div class="m-1">Event Type</div>
+									{{ formfields.eventtype2}}
+								</div>
+
+								<div class="col-5 border border-dark pb-2">
+									<div class="m-1">Event Venue</div>
+									{{ formfields.eventvenue2}}
+								</div>
+
+							</div>
+
+							<div class="border border-dark text-center font-weight-bold p-2">Gown Preferences</div>
+							<div class="d-flex ">
+
+								<div class="col-8 border border-dark pb-2">
+									<div class="m-1 my-2">Required Outfit (Please Tick): </div>
+
+									<div class="d-flex w-100">
+									{% for box in formfields.requiredoutfit %}
+										<label class="d-flex mx-1 flex-fill align-items-center" for="{{ box.id_for_label }}">
+											<span class="mx-1 col-6 align-middle">{{ box.choice_label }}</span>
+											<span class="radio col-4 align-middle">{{ box.tag }}</span>
+										</label>
+									{% endfor %}
+									</div>
+								</div>
+
+								<div class="col-4 border border-dark pb-2">
+									
+									<div class="m-1 my-2">No. of gowns required:</div>
+									<div class="d-flex justify-content-center">
+										{{ formfields.noofgowns }}
+									</div>
+								</div>
+							</div>
+
+							<div class="col-12 border border-dark">
+								
+								<div class="m-1 my-2">Preferred Outfit (Please Tick): </div>
+
+									<div class="d-flex w-100">
+									{% for box in formfields.preferredoutfit %}
+										<label class="d-flex mx-1 flex-fill justify-content-center align-items-center" for="{{ box.id_for_label }}">
+											<span class="mx-2 align-middle">{{ box.choice_label }}</span>
+											<span class="radio align-middle">{{ box.tag }}</span>
+										</label>
+									{% endfor %}
+									</div>
+
+								<div class="my-2 d-flex w-100">
+									<span class="align-self-center" style="vertical-align: middle;">Others: </span>
+									<span class="flex-fill">{{ formfields.preferredoutOthers }}</span>
+								</div>
+							</div>						
+
+							<div class="col-12 border border-dark">
+								<div class="m-1 my-2">Preferred Style: </div>
+
+									<div class="d-flex w-100">
+									{% for box in formfields.preferredstyle %}
+										<label class="d-flex mx-1 flex-fill justify-content-center align-items-center" for="{{ box.id_for_label }}">
+											<span class="mx-2 align-middle">{{ box.choice_label }}</span>
+											<span class="radio align-middle">{{ box.tag }}</span>
+										</label>
+									{% endfor %}
+									</div>
+
+								<div class="my-2 d-flex w-100">
+									<span class="align-self-center" style="vertical-align: middle;">Others: </span>
+									<span class="flex-fill">{{ formfields.preferredstyleOthers }}</span>
+								</div>
+							</div>
+
+
+							<div class="col-12 border border-dark">
+								<div class="m-1 my-2">Preferred Neckline: </div>
+
+									<div class="d-flex w-100">
+									{% for box in formfields.preferredNeckline %}
+										<label class="d-flex mx-1 flex-fill justify-content-center align-items-center" for="{{ box.id_for_label }}">
+											<span class="mx-2 align-middle">{{ box.choice_label }}</span>
+											<span class="radio align-middle">{{ box.tag }}</span>
+										</label>
+									{% endfor %}
+									</div>
+
+								<div class="my-2 d-flex w-100">
+									<span class="align-self-center" style="vertical-align: middle;">Others: </span>
+									<span class="flex-fill">{{ formfields.preferredNeckOthers }}</span>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+
+	</div>
+{% endblock %}
+
+{% block bottomjs %}
+	{% include 'statics/bottomjs.html' %}
+{% endblock %}
