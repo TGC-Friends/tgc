@@ -97,6 +97,9 @@ class initialForm(forms.Form):
 	preferredoutfit = forms.ChoiceField(label='Preferred Outfit', choices=[('Mermaid','Mermaid'), 
 																		('Ball', 'Ball'),
 																		('A-Line', 'A-Line'),
+																		('Modified-Line', 'Modified-Line'),
+																		('Column', 'Column'),
+																		('Trumpet', 'Trumpet'),
 																		('No Preference', 'No Preference')
 																		],
 								widget=forms.CheckboxSelectMultiple(
