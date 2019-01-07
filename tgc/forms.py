@@ -134,7 +134,7 @@ class initialForm(forms.Form):
 																		('Off-Shoulder', 'Off-Shoulder'),
 																		('Straight Across', 'Straight Across'),
 																		('Illusion', 'Illusion'),
-																		('Bateau/Boat Neck', 'Bateau/Boat Neck'),
+																		('Bateau_Boat_Neck', 'Bateau'),
 																		],
 								widget=forms.CheckboxSelectMultiple(
 									attrs={'style':'vertical-align: middle;'})
