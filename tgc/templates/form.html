@@ -24,6 +24,7 @@
 				
 				<div class="d-flex flex-row justify-content-center my-3">
 					<div class="col-10 col-sm-12 col-md-12">
+						<form method="post">
 						{% csrf_token %}
 						<!-- description -->
 						<p>
@@ -206,10 +207,16 @@
 									<span class="align-self-center" style="vertical-align: middle;">Others: </span>
 									<span class="flex-fill">{{ formfields.preferredNeckOthers }}</span>
 								</div>
+
+
 							</div>
 
 
 						</div>
+
+						<button type="submit" 
+						class="btn btn-primary my-3">Submit</button>
+						</form>
 					</div>
 				</div>
 
