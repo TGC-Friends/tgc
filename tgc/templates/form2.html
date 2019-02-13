@@ -256,74 +256,23 @@
 						<hr class="my-3">
 						<div class="d-flex align-items-center px-3">
 							<div id="statusdiv" class="d-flex">
-								<div class="mr-3">Form Table Status:</div></div>
+								<div class="mr-3">Status:</div></div>
 							<button id="submitformdetails_btn" onclick="submitformdetails_post();"
-							class="btn btn-outline-danger ml-auto" name="submit_form_details">Submit Form Details</button>
+							class="btn btn-primary ml-auto" name="log_acct_details">Submit Form Details</button>
 						</div>
 						<hr class="my-3">
-						
 						<!-- acct details card -->
 						<div class="card">
 							<div class="card-header d-flex justify-content-between align-items-center pr-2">
 								Account Details
-								<!-- <button id="log_acct_details_btn" onclick=""
-							class="btn btn-primary" name="log_acct_details">Log / Verify Client Acct</button> -->
+								<button id="log_acct_details_btn" onclick=""
+							class="btn btn-primary" name="log_acct_details">Log / Verify Client Acct</button>
 							</div>
 							<div id="acctdetailscardbody" class="card-body collapse">
 								
 							</div>
 						</div>
-
-						<!-- order details card -->
-						<div class="card my-2">
-							<div class="card-header d-flex justify-content-between align-items-center pr-2">
-								Order Details
-							</div>
-							<div id="orderdetailscardbody" class="card-body collapse">
-								
-							</div>
-						</div>
-
-						<!-- Update Manual Order -->
-						<div class="card my-2">
-							<div class="card-header d-flex align-items-center pr-3">
-								<span class="mr-auto">Update GS Order Details Manually:</span>
-								<input id="ordernuminputbox" class="mr-2" type="number" name="order number" placeholder="Order Number">
-								<input id="orderidinputbox" class="mr-2" type="text" name="order id" placeholder="Order ID">
-								<button id="gs_updateorder_btn" onclick="updateorderings();"
-							class="btn btn-warning">&nbsp;Update Order in GS&nbsp;</button>
-							</div>
-							<div id="manualupdateordercardbody" class="card-body collapse">
-								
-							</div>
-						</div>
 						
-						<!-- Update Manual Invoice -->
-						<div class="card my-2">
-							<div class="card-header d-flex align-items-center pr-3">
-								<span class="mr-auto">Update GS Invoice Details Manually</span>
-								<input id="invoicenuminputbox" class="mr-2" type="text" name="invoice number" placeholder="Invoice Number">
-								<button id="gs_updateinvoice_btn" onclick="updateinvoiceings();"
-							class="btn btn-success">Update Invoice in GS</button>
-							</div>
-							<div id="manualupdateinvoicecardbody" class="card-body collapse">
-								
-							</div>
-						</div>
-
-						<!-- Update Wix Dates -->
-						<div class="card my-2 mb-5">
-							<div class="card-header d-flex align-items-center pr-3">
-								<span>Update Fitting Dates in GS</span>
-								<button id="gs_updatefittingdates_btn" onclick="updatefittingdatesings();"
-							class="btn btn-primary ml-auto">Update Fitting Dates in GS</button>
-							</div>
-							<div id="manualupdatefittingdatescardbody" class="card-body collapse">
-								
-							</div>
-						</div>
-
-
 					</div>
 				</div>
 
@@ -393,190 +342,57 @@
         $('#statusdiv').append("<span>Checking records for registered values...</span>")
 
 	    $.ajax({
-	        url : "submitformdetails/", // the endpoint
-	        type : "POST", // http method
-	        data : formData,
-	    	processData: false,
-	    	contentType: false,
-	        // handle a successful response
-	        success : function(json) {
-	            $('#statusdiv').children("span").remove() //removes ALL spans
-	            $('#statusdiv').append("<span>"+json["tabletform_msg"]+"</span>")
-	            $('#acctdetailscardbody').toggleClass("show", $('#acctdetailscardbody').children().length > 0 )
-	        },
+        url : "submitformdetails/", // the endpoint
+        type : "POST", // http method
+        data : formData,
+    	processData: false,
+    	contentType: false,
+        		//{ bridename : $('#bridename').val(),
+        		//groomname : $('#groomname').val(),
+        		//phonenum : $('#phonenum').val(),
+        		//emailfield : $('#emailfield').val(),
+        		//howdidyouhear : $('#howdidyouhear').val(),
+        		//eventdate1 : $('#eventdate1').val(),
+        		//eventtype1 : $('#eventtype1').val(),
+        		//eventvenue1 : $('#eventvenue1').val(),
+        		//eventdate2 : $('#eventdate2').val(),
+        		//eventtype2 : $('#eventtype2').val(),
+        		//eventvenue2 : $('#eventvenue2').val(),
+        		//requiredoutfit : $('#requiredoutfit').val(),
+        		//noofgowns : $('#noofgowns').val(),
+        		//preferredoutfit :["shit", "you"], 
+        		//[//$('#preferredoutfit_6:checked').val()
+        		//2, 1],
+        		//preferredoutOthers : $('#preferredoutOthers').val(),
+        		//preferredstyle : $('#preferredstyle').val(),
+        		//preferredstyleOthers : $('#preferredstyleOthers').val(),
+        		//preferredNeckline : $('#preferredNeckline').val(),
+        		//preferredNeckOthers : $('#preferredNeckOthers').val(),
+        		//attendant : $('#attendant').val(),
+        		//additionalnotes : $('#additionalnotes').val(),
+        	 //}, // data sent with the post request
 
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {
-	        	$('#statusdiv').children("span").remove() //removes ALL spans
-	            $('#statusdiv').append("<span>Error in Ajax Call.</span>")
-	            console.log(errmsg);
-	            console.log(xhr.status + ": " + xhr.responseText);
-	        }
-    	});
+        // handle a successful response
+        success : function(json) {
+            //console.log(json);
+            console.log("success"); // another sanity check
+            
+            $('#statusdiv').children("span").remove() //removes ALL spans
+            //$('#statusdiv').append("<span>Updated Form Details in Db.</span>")
+            $('#statusdiv').append("<span>"+json["tabletform_msg"]+"</span>")
 
-	    // ===== Deal with Acct Logs =====
-	    $('#acctdetailscardbody').children("span").remove() //removes ALL spans
-        $('#acctdetailscardbody').append("<span>Checking Booqable for registered acct...</span>")
-        $('#acctdetailscardbody').toggleClass("show", $('#acctdetailscardbody').children().length > 0 )
-    	$.ajax({
-	        url : "processcustomeracct/", // the endpoint
-	        type : "POST", // http method
-	        data : formData,
-	    	processData: false,
-	    	contentType: false,
-	        // handle a successful response
-	        success : function(json) {
-	            $('#acctdetailscardbody').children("span").remove() //removes ALL spans
-	            $('#acctdetailscardbody').append("<span>"+json["custform_msg"]+"</span>")
-	            $('#acctdetailscardbody').toggleClass("show", $('#acctdetailscardbody').children().length > 0 )
+            $('#acctdetailscardbody').toggleClass("show", $('#acctdetailscardbody').children().length > 0 )
+            //console.log();
+        },
 
-
-	            // ===== Deal with Order Creation and Logging ===== 
-	            // if successful retrieval or creation of customer id in booqable,
-	            // create order or return existing order
-	            if (json['availcustID'] != null){
-
-	            	console.log(json['availcustID']);
-	            	formData.append('cust_id',json['availcustID']);
-	            	$('#orderdetailscardbody').children("span").remove() //removes ALL spans
-		            $('#orderdetailscardbody').append("<span>Checking for existing orders... </span>")
-		            $('#orderdetailscardbody').toggleClass("show", $('#orderdetailscardbody').children().length > 0 )
-		            
-		            $.ajax({
-						        url : "processorders/", // the endpoint
-						        type : "POST", // http method
-						        data : formData,
-						    	processData: false,
-						    	contentType: false,
-						        // handle a successful response
-						        success : function(json) {
-						            $('#orderdetailscardbody').children("span").remove() //removes ALL spans
-						            $('#orderdetailscardbody').append("<span>"+json["orders_msg"]+"</span>")
-						            $('#orderdetailscardbody').toggleClass("show", $('#orderdetailscardbody').children().length > 0 );
-						        },
-
-						        // handle a non-successful response
-						        error : function(xhr,errmsg,err) {
-						        	$('#orderdetailscardbody').children("span").remove() //removes ALL spans
-						            $('#orderdetailscardbody').append("<span>Error in Ajax Call.</span>")
-						            console.log(errmsg);
-						            console.log(xhr.status + ": " + xhr.responseText);
-						        }
-    				});
-
-	            };
-	        },
-
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {
-	        	$('#acctdetailscardbody').children("span").remove() //removes ALL spans
-	            $('#acctdetailscardbody').append("<span>Error in Ajax Call.</span>")
-	            console.log(errmsg);
-	            console.log(xhr.status + ": " + xhr.responseText);
-	        }
-    	});
-
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            console.log(errmsg);
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
 	};
 
-	function updateorderings(){
-		console.log('update order in gs function.');
-
-		var orderformData = new FormData();
-		orderformData.append('ordernum', $('#ordernuminputbox').val());
-		orderformData.append('orderid', $('#orderidinputbox').val());
-
-		$('#manualupdateordercardbody').children("span").remove() //removes ALL spans
-	    $('#manualupdateordercardbody').append("<span>Retrieving Order from Booqable...</span>")
-	    $('#manualupdateordercardbody').toggleClass("show", $('#manualupdateordercardbody').children().length > 0 )
-
-		$.ajax({
-	        url : "updateorderings/", // the endpoint
-	        type : "POST", // http method
-	        data : orderformData,
-	    	processData: false,
-	    	contentType: false,
-	        // handle a successful response
-	        success : function(json) {
-	            $('#manualupdateordercardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdateordercardbody').append("<span>"+json["orders_msg"]+"</span>")
-	            $('#manualupdateordercardbody').toggleClass("show", $('#manualupdateordercardbody').children().length > 0 )
-	        },
-
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {
-	        	$('#manualupdateordercardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdateordercardbody').append("<span>Error in Ajax Call.</span>")
-	            console.log(errmsg);
-	            console.log(xhr.status + ": " + xhr.responseText);
-	        }
-    	});
-
-	};
-
-	function updateinvoiceings(){
-		console.log('update invoice in gs function.');
-		//console.log($('#invoicenuminputbox').val())
-
-		var invoiceformData = new FormData();
-		invoiceformData.append('invoicenum', $('#invoicenuminputbox').val());
-
-		$('#manualupdateinvoicecardbody').children("span").remove() //removes ALL spans
-	    $('#manualupdateinvoicecardbody').append("<span>Retrieving Invoice from Booqable...</span>")
-	    $('#manualupdateinvoicecardbody').toggleClass("show", $('#manualupdateinvoicecardbody').children().length > 0 )
-
-		$.ajax({
-	        url : "updateinvoiceings/", // the endpoint
-	        type : "POST", // http method
-	        data : invoiceformData,
-	    	processData: false,
-	    	contentType: false,
-	        // handle a successful response
-	        success : function(json) {
-	            $('#manualupdateinvoicecardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdateinvoicecardbody').append("<span>"+json["invoice_msg"]+"</span>")
-	            $('#manualupdateinvoicecardbody').toggleClass("show", $('#manualupdateinvoicecardbody').children().length > 0 )
-	        },
-
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {
-	        	$('#manualupdateordercardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdateordercardbody').append("<span>Error in Ajax Call.</span>")
-	            console.log(errmsg);
-	            console.log(xhr.status + ": " + xhr.responseText);
-	        }
-    	});
-	};
-
-	function updatefittingdatesings(){
-		console.log('update fitting dates in gs function.');
-		$('#manualupdatefittingdatescardbody').children("span").remove() //removes ALL spans
-	    $('#manualupdatefittingdatescardbody').append("<span>Retrieving Google Calendar Data...</span>")
-	    $('#manualupdatefittingdatescardbody').toggleClass("show", $('#manualupdatefittingdatescardbody').children().length > 0 )
-
-	    var dummyFittingData = new FormData();
-
-	    $.ajax({
-	        url : "updatefittingdatesings/", // the endpoint
-	        type : "POST", // http method
-	        data : dummyFittingData,
-	    	processData: false,
-	    	contentType: false,
-	        // handle a successful response
-	        success : function(json) {
-	            $('#manualupdatefittingdatescardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdatefittingdatescardbody').append("<span>"+json["fittingdates_msg"]+"</span>")
-	            $('#manualupdatefittingdatescardbody').toggleClass("show", $('#manualupdatefittingdatescardbody').children().length > 0 )
-	        },
-
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {
-	        	$('#manualupdatefittingdatescardbody').children("span").remove() //removes ALL spans
-	            $('#manualupdatefittingdatescardbody').append("<span>Error in Ajax Call.</span>")
-	            console.log(errmsg);
-	            console.log(xhr.status + ": " + xhr.responseText);
-	        }
-	    });
-	};
 
     $(function () {
         $('#{{ formfields.eventdate1.id_for_label }}').datepicker({
