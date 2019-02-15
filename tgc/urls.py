@@ -28,6 +28,8 @@ urlpatterns = [
     path('submitformdetails/', views.submitformdetails, name='submitformdetails'),
     path('processcustomeracct/', views.processcustomeracct, name='processcustomeracct'),
     path('processorders/', views.processorders, name='processorders'),
+
+    path('updatecustomerings/', views.updatecustomerinGSview, name='updatecustomerings'),
     path('updateorderings/', views.updateorderinGSview, name='updateorderings'),
     path('updateinvoiceings/', views.updateinvoiceinGSview, name='updateinvoiceins'),
     path('updatefittingdatesings/', views.updatefittingdatesinGSview, name='updatefittingdatesings'),

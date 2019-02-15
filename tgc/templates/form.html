@@ -284,6 +284,19 @@
 							</div>
 						</div>
 
+						<!-- Update Manual Customer by Number-->
+						<div class="card my-2">
+							<div class="card-header d-flex align-items-center pr-3">
+								<span class="mr-auto">Update GS Customer Details Manually:</span>
+								<input id="customernuminputbox" class="mr-2" type="number" name="customer number" placeholder="Customer Number">
+								<button id="gs_updatecustomer_btn" onclick="updatecustomerings();"
+							class="btn btn-danger">&nbsp;Update Order in GS&nbsp;</button>
+							</div>
+							<div id="manualupdatecustomercardbody" class="card-body collapse">
+								
+							</div>
+						</div>
+
 						<!-- Update Manual Order -->
 						<div class="card my-2">
 							<div class="card-header d-flex align-items-center pr-3">
@@ -471,6 +484,40 @@
 	        error : function(xhr,errmsg,err) {
 	        	$('#acctdetailscardbody').children("span").remove() //removes ALL spans
 	            $('#acctdetailscardbody').append("<span>Error in Ajax Call.</span>")
+	            console.log(errmsg);
+	            console.log(xhr.status + ": " + xhr.responseText);
+	        }
+    	});
+
+	};
+
+	function updatecustomerings(){
+		console.log('update customer in gs function.');
+
+		var customerformData = new FormData();
+		customerformData.append('customernum', $('#customernuminputbox').val());
+
+		$('#manualupdatecustomercardbody').children("span").remove() //removes ALL spans
+	    $('#manualupdatecustomercardbody').append("<span>Retrieving Customer Info from Booqable...</span>")
+	    $('#manualupdatecustomercardbody').toggleClass("show", $('#manualupdatecustomercardbody').children().length > 0 )
+
+	    $.ajax({
+	        url : "updatecustomerings/", // the endpoint
+	        type : "POST", // http method
+	        data : customerformData,
+	    	processData: false,
+	    	contentType: false,
+	        // handle a successful response
+	        success : function(json) {
+	            $('#manualupdatecustomercardbody').children("span").remove() //removes ALL spans
+	            $('#manualupdatecustomercardbody').append("<span>"+json["customer_msg"]+"</span>")
+	            $('#manualupdatecustomercardbody').toggleClass("show", $('#manualupdatecustomercardbody').children().length > 0 )
+	        },
+
+	        // handle a non-successful response
+	        error : function(xhr,errmsg,err) {
+	        	$('#manualupdatecustomercardbody').children("span").remove() //removes ALL spans
+	            $('#manualupdatecustomercardbody').append("<span>Error in Ajax Call.</span>")
 	            console.log(errmsg);
 	            console.log(xhr.status + ": " + xhr.responseText);
 	        }

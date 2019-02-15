@@ -328,7 +328,7 @@ def insertNewCustID_in_GS(email="", custID="", name="", custNum="", phone="", gs
 	result = bqCustIDsht.insert_row([email, custID, name, custNum, phone],2)
 	return result 
 
-def updateGS_CustomerForm(response_data= {},rowcheckresult="invalid email", gsht="booqable customer id"):
+def updateGS_CustomerForm(response_data= {},rowcheckresult="invalid email and phone.", gsht="booqable customer id"):
 	bqCustIDsht = logtosheet(gsht)
 	availcustID = None # to pass to order search
 
@@ -928,6 +928,37 @@ def processorders(request):
 			content_type="application/json")
 	else:
 		return HttpResponse(json.dumps({"orders_msg": "not a POST request."}),
+			content_type="application/json")
+
+def updatecustomerinGSview(request):
+	if request.method == 'POST':
+
+		# pre-processing
+		customernum = request.POST.get('customernum')
+
+		if customernum is None: customernum = ""
+
+		message = ""
+		# 1. get order details from booqable.
+		email, custID, custname, custNum, custhp = searchForCustDetailsInBooqable(custNum=customernum)
+		if custNum is None:
+			message = email
+
+		# 2. Update GS
+		else:
+			# 1. check if record is available in Customer Google Sheet
+			gsCust_CustIDrowNum = check_EmailorPhone_exists_returnRowNum(email=email, phone=custhp)
+			# 2. process Customer Record, (if rowcheckresult is integer, then)
+			custFormMessage, availcustID = updateGS_CustomerForm(response_data= {'bridename': custname,
+																	'emailfield': email,
+																	'phonenum': custhp},
+												rowcheckresult=gsCust_CustIDrowNum)
+			message = custFormMessage
+
+		return HttpResponse(json.dumps({"customer_msg": message}),
+			content_type="application/json")
+	else:
+		return HttpResponse(json.dumps({"customer_msg": "not a POST request."}),
 			content_type="application/json")
 
 def updateorderinGSview(request):
