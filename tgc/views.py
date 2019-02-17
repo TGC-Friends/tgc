@@ -87,11 +87,11 @@ def dealwithresponsedata(responsedata):
 	eventdate2 = responsedata.get('eventdate2')
 	eventdate3 = responsedata.get('eventdate3')
 
-	if eventdate1 != "" and is not None:
+	if (eventdate1 != "") and eventdate1 is not None:
 		eventdate1 = datetime.datetime.strptime(eventdate1,'%d-%m-%Y').strftime('%d %b %y')
-	if eventdate2 != "" and is not None:
+	if (eventdate2 != "") and eventdate2 is not None:
 		eventdate2 = datetime.datetime.strptime(eventdate2,'%d-%m-%Y').strftime('%d %b %y')
-	if eventdate3 != "" and is not None:
+	if (eventdate3 != "") and eventdate3 is not None:
 		eventdate3 = datetime.datetime.strptime(eventdate3,'%d-%m-%Y').strftime('%d %b %y')
 
 	response_data = {
