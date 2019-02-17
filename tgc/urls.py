@@ -26,6 +26,8 @@ app_name = 'tgc'
 urlpatterns = [
 	path('', views.initial_formview, name='initform'),
     path('submitformdetails/', views.submitformdetails, name='submitformdetails'),
+
+
     path('processcustomeracct/', views.processcustomeracct, name='processcustomeracct'),
     path('processorders/', views.processorders, name='processorders'),
 
@@ -33,6 +35,8 @@ urlpatterns = [
     path('updateorderings/', views.updateorderinGSview, name='updateorderings'),
     path('updateinvoiceings/', views.updateinvoiceinGSview, name='updateinvoiceins'),
     path('updatefittingdatesings/', views.updatefittingdatesinGSview, name='updatefittingdatesings'),
+
+    path('retrieveformdetails/', views.retrieveformdetails, name='retrieveformdetails'),
     path('admin/', admin.site.urls),
 ]
 

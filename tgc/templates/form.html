@@ -255,11 +255,13 @@
 						</div>
 						<hr class="my-3">
 						<div class="d-flex align-items-center px-3">
+							
 							<div id="statusdiv" class="d-flex">
 								<div class="mr-3">Form Table Status:</div></div>
 							<button id="submitformdetails_btn" onclick="submitformdetails_post();"
 							class="btn btn-outline-danger ml-auto" name="submit_form_details">Submit Form Details</button>
 						</div>
+
 						<hr class="my-3">
 						
 						<!-- acct details card -->
@@ -325,7 +327,7 @@
 						</div>
 
 						<!-- Update Wix Dates -->
-						<div class="card my-2 mb-5">
+						<div class="card my-2">
 							<div class="card-header d-flex align-items-center pr-3">
 								<span>Update Fitting Dates in GS</span>
 								<button id="gs_updatefittingdates_btn" onclick="updatefittingdatesings();"
@@ -336,6 +338,17 @@
 							</div>
 						</div>
 
+						<hr>
+						<!-- retrieve tablet form -->
+						<div class="d-flex align-items-center px-3 mt-3">
+							<div id="retrieve_status_div" class="d-flex mr-auto">
+								<div class="mr-3">Retrieve Record by:</div></div>
+							<input id="emailinputbox" class="mr-2" type="text" name="email" placeholder="Email Add">
+							<input id="phonenuminputbox" class="mr-2" type="number" name="phonenum" placeholder="Phone Num">
+							<button id="retrieveformdetails_btn" onclick="retrieveformdetails_post();"
+							class="btn btn-outline-primary" name="retrieve_form_details">Retrieve Form Details</button>
+						</div>
+						<hr class="mb-5">
 
 					</div>
 				</div>
@@ -489,6 +502,193 @@
 	        }
     	});
 
+	};
+
+	function retrieveformdetails_post(){
+		//console.log("retrieving...");
+		$('#retrieve_status_div').children("span").remove()
+        $('#retrieve_status_div').append("<span>Checking records for previous entries...</span>")
+
+        var dataquery = new FormData();
+	    dataquery.append('email', $('#emailinputbox').val());
+        dataquery.append('phone', $('#phonenuminputbox').val());
+
+        $.ajax({
+	        url : "retrieveformdetails/", // the endpoint
+	        type : "POST", // http method
+	        data : dataquery,
+	    	processData: false,
+	    	contentType: false,
+	        // handle a successful response
+	        success : function(json) {
+	            $('#retrieve_status_div').children("span").remove() //removes ALL spans
+	            //json["retrieve_msg"]
+	            //console.log(Object.keys(json).length);
+	            if (Object.keys(json).length > 1){
+	            	console.log(json); // sanity check
+
+	            	// uncheck all first
+	            	$('#bridename').val("");
+        			$('#groomname').val("");
+        			$('#phonenum').val("");
+        			$('#emailfield').val("");
+        			$('#howdidyouhear').val("");
+        			$('#eventdate1').val("");
+        			$('#eventtype1').val("None");
+        			$('#eventvenue1').val("");
+        			$('#eventdate2').val("");
+        			$('#eventtype2').val("None");
+        			$('#eventvenue2').val("");
+        			$('#eventdate3').val("");
+        			$('#eventtype3').val("None");
+        			$('#eventvenue3').val("");
+
+        			$('#requiredoutfit_0').prop("checked", false);
+        			$('#requiredoutfit_1').prop("checked", false);
+
+        			$('#noofgowns').val("");
+
+        			$('#preferredoutfit_0').prop("checked", false);
+        			$('#preferredoutfit_1').prop("checked", false);
+        			$('#preferredoutfit_2').prop("checked", false);
+        			$('#preferredoutfit_3').prop("checked", false);
+        			$('#preferredoutfit_4').prop("checked", false);
+        			$('#preferredoutfit_5').prop("checked", false);
+        			$('#preferredoutfit_6').prop("checked", false);
+
+        			$('#preferredoutOthers').val("");
+					
+					$('#preferredstyle_0').prop("checked", false);
+					$('#preferredstyle_1').prop("checked", false);
+					$('#preferredstyle_2').prop("checked", false);
+					$('#preferredstyle_3').prop("checked", false);
+        			$('#preferredstyleOthers').val("");
+
+        			$('#preferredNeckline_0').prop("checked", false);
+        			$('#preferredNeckline_1').prop("checked", false);
+        			$('#preferredNeckline_2').prop("checked", false);
+        			$('#preferredNeckline_3').prop("checked", false);
+        			$('#preferredNeckline_4').prop("checked", false);
+        			$('#preferredNeckline_5').prop("checked", false);
+        			$('#preferredNeckOthers').val("");
+
+        			$('#attendant').val("");
+        			$('#additionalnotes').val("");
+
+
+
+        			// Start set values
+	            	$('#bridename').val(json['bridename']);
+        			$('#groomname').val(json['groomname']);
+        			$('#phonenum').val(json['phonenum']);
+        			$('#emailfield').val(json['emailfield']);
+        			$('#howdidyouhear').val(json['howdidyouhear']);
+        			$('#eventdate1').val(json['eventdate1']);
+        			$('#eventtype1').val(json['eventtype1']);
+        			$('#eventvenue1').val(json['eventvenue1']);
+        			$('#eventdate2').val(json['eventdate2']);
+        			$('#eventtype2').val(json['eventtype2']);
+        			$('#eventvenue2').val(json['eventvenue2']);
+        			$('#eventdate3').val(json['eventdate3']);
+        			$('#eventtype3').val(json['eventtype3']);
+        			$('#eventvenue3').val(json['eventvenue3']);
+
+        			// requiredoutfit
+        			if (json['requiredoutfit'].indexOf("Bridal Gown") !== -1){
+        				$('#requiredoutfit_0').prop("checked", true);
+        			}
+        			if (json['requiredoutfit'].indexOf("Evening Gown") !== -1){
+        				$('#requiredoutfit_1').prop("checked", true);
+        			}
+
+        			// no of gowns
+        			$('#noofgowns').val(json['noofgowns']);
+
+        			// preferred outfit
+        			if (json['preferredoutfit'].indexOf("Mermaid") !== -1){
+        				$('#preferredoutfit_0').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("Ball") !== -1){
+        				$('#preferredoutfit_1').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("A-Line") !== -1){
+        				//console.log('a-line')
+        				$('#preferredoutfit_2').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("Modified-Line") !== -1){
+        				$('#preferredoutfit_3').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("Column") !== -1){
+        				$('#preferredoutfit_4').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("Trumpet") !== -1){
+        				$('#preferredoutfit_5').prop("checked", true);
+        			}
+        			if (json['preferredoutfit'].indexOf("No Preference") !== -1){
+        				$('#preferredoutfit_6').prop("checked", true);
+        			}
+        		
+        			$('#preferredoutOthers').val(json['preferredoutOthers']);
+
+        			// preferred style
+        			if (json['preferredstyle'].indexOf("Bead Dress") !== -1){
+        				$('#preferredstyle_0').prop("checked", true);
+        			}
+        			if (json['preferredstyle'].indexOf("Lace Dress") !== -1){
+        				$('#preferredstyle_1').prop("checked", true);
+        			}
+        			if (json['preferredstyle'].indexOf("Plain") !== -1){
+        				$('#preferredstyle_2').prop("checked", true);
+        			}
+        			if (json['preferredstyle'].indexOf("No Preference") !== -1){
+        				$('#preferredstyle_3').prop("checked", true);
+        			}
+
+        			$('#preferredstyleOthers').val(json['preferredstyleOthers']);
+        			
+
+        			if (json['preferredNeckline'].indexOf("Sweetheart") !== -1){
+        				$('#preferredNeckline_0').prop("checked", true);
+        			}
+        			if (json['preferredNeckline'].indexOf("V-Neck") !== -1){
+        				$('#preferredNeckline_1').prop("checked", true);
+        			}
+        			if (json['preferredNeckline'].indexOf("Off-Shoulder") !== -1){
+        				$('#preferredNeckline_2').prop("checked", true);
+        			}
+        			if (json['preferredNeckline'].indexOf("Straight Across") !== -1){
+        				$('#preferredNeckline_3').prop("checked", true);
+        			}
+        			if (json['preferredNeckline'].indexOf("Illusion") !== -1){
+        				$('#preferredNeckline_4').prop("checked", true);
+        			}
+        			if (json['preferredNeckline'].indexOf("Bateau") !== -1){
+        				$('#preferredNeckline_5').prop("checked", true);
+        			}
+
+        			$('#preferredNeckOthers').val(json['preferredNeckOthers']);
+        			$('#attendant').val(json['attendant']);
+        			$('#additionalnotes').val(json['additionalnotes']);
+
+
+
+
+	            	$('#retrieve_status_div').append("<span>"+"Record Retrieved. See Above."+"</span>")
+	            }
+	            else{
+	            	$('#retrieve_status_div').append("<span>"+json["error"]+"</span>")
+	            }
+
+	        },
+
+	        // handle a non-successful response
+	        error : function(xhr,errmsg,err) {
+	        	$('#retrieve_status_div').children("span").remove() //removes ALL spans
+	            $('#retrieve_status_div').append("<span>Error in Ajax Call.</span>")
+	            console.log(errmsg);
+	            console.log(xhr.status + ": " + xhr.responseText);
+	        }
+    	});
 	};
 
 	function updatecustomerings(){

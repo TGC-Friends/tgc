@@ -86,15 +86,21 @@ def dealwithresponsedata(responsedata):
 			'bridename' : responsedata.get('bridename'),
 			'groomname' : responsedata.get('groomname'),
 			'phonenum' : responsedata.get('phonenum'),
-			'emailfield' : responsedata.get('emailfield'),
+			'emailfield' : responsedata.get('emailfield',""),#.lower(), # lowercase all
 			'howdidyouhear' : responsedata.get('howdidyouhear'),
-			'eventdate1' : responsedata.get('eventdate1'),
+			#'eventdate1' : responsedata.get('eventdate1'),
+			'eventdate1' :  datetime.datetime.strptime(responsedata.get('eventdate1'),
+				'%d-%m-%Y').strftime('%d %b %y'),
 			'eventtype1' : responsedata.get('eventtype1'),
 			'eventvenue1' : responsedata.get('eventvenue1'),
-			'eventdate2' : responsedata.get('eventdate2'),
+			#'eventdate2' : responsedata.get('eventdate2'),
+			'eventdate2' :  datetime.datetime.strptime(responsedata.get('eventdate2'),
+				'%d-%m-%Y').strftime('%d %b %y'),
 			'eventtype2' : responsedata.get('eventtype2'),
 			'eventvenue2' : responsedata.get('eventvenue2'),
-			'eventdate3' : responsedata.get('eventdate3'),
+			#'eventdate3' : responsedata.get('eventdate3'),
+			'eventdate3' :  datetime.datetime.strptime(responsedata.get('eventdate3'),
+				'%d-%m-%Y').strftime('%d %b %y'),
 			'eventtype3' : responsedata.get('eventtype3'),
 			'eventvenue3' : responsedata.get('eventvenue3'),
 			'requiredoutfit' : responsedata.get('requiredoutfit').replace("false,","").replace("false",""),
@@ -113,6 +119,22 @@ def dealwithresponsedata(responsedata):
 		}
 
 	return response_data
+
+
+def updateEventDict(eventdict, responsedata, eventnum=1):
+
+	#eventdict = {'weddingdate': None,'PWS': None, 'ROMdate' : None,}
+
+	if response_data.get('eventtype'+eventnum) == "Actual":
+		eventdict['weddingdate'] = response_data.get('eventdate'+eventnum)
+
+	if response_data.get('eventtype'+eventnum) == "PWS":
+		eventdict['PWS'] = response_data.get('eventdate'+eventnum)
+
+	if response_data.get('eventtype'+eventnum) == "ROM":
+		eventdict['ROMdate'] = response_data.get('eventdate'+eventnum)
+
+	return eventdict
 
 # === Tablet Form Functions
 def check_email_in_GS_TabletForm(email="", gsht="Tablet Form", emailcolnum=4):
@@ -140,6 +162,30 @@ def check_email_in_GS_TabletForm(email="", gsht="Tablet Form", emailcolnum=4):
 		print("no matching email in Tablet Form of Google Sheet.")
 		return "no matching email"
 		
+def check_phonenum_in_GS_TabletForm(phonenum="", gsht="Tablet Form", phonenumcolnum=3):
+	tabformsht = logtosheet(gsht)
+	## === pre-process inputs
+	phonenum = str(phonenum).strip()
+
+	print("checking phone number: {}".format(phonenum))
+	## === If no input, then return None
+	if phonenum=="" or (phonenum is None):
+		print("invalid phonenum.")
+		return "invalid phonenum"
+
+	## === Search for Email === 
+	phonenumcol = tabformsht.col_values(phonenumcolnum)
+	phonenumcol = [str(v) for v in phonenumcol]
+	matchingPhoneNumrow = [r for r, s in enumerate(phonenumcol) if phonenum in s]
+
+
+	if len(matchingPhoneNumrow)>0:
+		print("found matching row in Tablet Form of Google Sheet.")
+		return matchingPhoneNumrow[0] + 1
+
+	else:
+		print("no matching phonenum in Tablet Form of Google Sheet.")
+		return "no matching phonenum"
 
 def updateGS_TabletForm(datarow=["error"]*4,rowcheckresult="invalid email", gsht="Tablet Form"):
 	tabformsht = logtosheet(gsht)
@@ -263,7 +309,7 @@ def searchForCustDetailsInBooqable(custNum="", custID=""):
 		return ("Warning: No Cust found due to missing/invalid customer id or num.", None, None, None, None)
 
 	# Search Booqable with Cust Number and return GS dataset
-	elif custNum !="" and (custNum is not None):
+	if custNum !="" and (custNum is not None):
 		r = http.request('GET','https://the-gown-connoisseur.booqable.com/api/1/customers/'+custNum+'?api_key='+apikey)
 		status = r.status
 		if str(status)[0] == '2':
@@ -284,9 +330,9 @@ def searchForCustDetailsInBooqable(custNum="", custID=""):
 
 		else:
 			print('failed to ping booqable on search with Cust Num. Status: {}'.format(status))
-			return ('failed to ping booqable on search with Cust Num.', None, None, None, None)
+			#return ('failed to ping booqable on search with Cust Num.', None, None, None, None)
 
-	elif custID !="" and (custID is not None):
+	if custID !="" and (custID is not None):
 		r = http.request('GET','https://the-gown-connoisseur.booqable.com/api/1/customers/'+custID+'?api_key='+apikey)
 		status = r.status
 		if str(status)[0] == '2':
@@ -306,11 +352,11 @@ def searchForCustDetailsInBooqable(custNum="", custID=""):
 
 		else:
 			print('failed to ping booqable on search with Cust ID. Status: {}'.format(status))
-			return ('failed to ping booqable on search with Cust ID.',None, None, None, None)
+			#return ('failed to ping booqable on search with Cust ID.',None, None, None, None)
 
-	else:
-		print("Warning: No Cust found due to missing/invalid customer id or num.")
-		return ("Warning: No Cust found due to missing/invalid customer id or num.", None, None, None, None)
+	#else:
+	print("Warning: No Cust found due to missing/invalid customer id or num.")
+	return ("Warning: No Cust found due to missing/invalid customer id or num.", None, None, None, None)
 
 
 def searchForCustDetailsInGS(rowNum="", gsht="booqable customer id"):
@@ -440,20 +486,24 @@ def get_order_rowvalues_from_GS(orderrownum=2, gsht="booqable orders"):
 	orderstatus = orderdetails[3]
 	order_order = orderdetails[4]
 	order_weddingdate = orderdetails[5]
+	order_pwsdate = orderdetails[6]
+	order_romdate = orderdetails[7]
+
 	
-	orderdetails = [custID, orderID, ordernum, orderstatus, order_order, order_weddingdate]
+	message = (custID, orderID, ordernum, orderstatus, order_order, order_weddingdate, 
+				order_pwsdate, order_romdate)
 	
-	message = tuple(orderdetails)
+	#message = tuple(orderdetails)
 
 	return message
 
-def create_Order_in_booqable(custID="", weddingdate=""):
+def create_Order_in_booqable(custID="", weddingdate="", order_pwsdate="", order_romdate=""):
 	custID = str(custID).strip()
 
 	if custID=="":
 		print("Warning: No order created due to missing/invalid cust ID.")
 		message = "Warning: No order created due to missing/invalid cust ID."
-		return (message, None, None, None, None, None)
+		return (message, None, None, None, None, None, None, None)
 
 	encoded_body = json.dumps({"order": {
 								"customer_id": custID,
@@ -461,6 +511,17 @@ def create_Order_in_booqable(custID="", weddingdate=""):
 										'type': 'Property::TextField',
 										'name': 'Wedding Date',
 										'value': weddingdate, },
+
+										{
+										'type': 'Property::TextField',
+										'name': 'PWS Date',
+										'value': order_pwsdate, },
+
+										{
+										'type': 'Property::TextField',
+										'name': 'ROM Date',
+										'value': order_romdate, },
+
 									],}
 								})
 
@@ -479,11 +540,18 @@ def create_Order_in_booqable(custID="", weddingdate=""):
 		orderstatus = ""
 		orderdetails = ""
 		order_weddingdate = ""
+		order_pwsdate = ""
+		order_romdate = ""
+
 		# iterate through to find order wedding date property
 		if len(json_obj['order']['properties'])>0:
 			for i in json_obj['order']['properties']:
 				if i['name'] == 'Wedding Date':
 					order_weddingdate = i['value']
+				if i['name'] == 'PWS Date':
+					order_pwsdate = i['value']
+				if i['name'] == 'ROM Date':
+					order_romdate = i['value']
 
 		print('created order id: {} (not saved)'.format(orderID))
 
@@ -497,23 +565,34 @@ def create_Order_in_booqable(custID="", weddingdate=""):
 			ordernum = json_obj['order']['number']
 			orderstatus = json_obj['order']['status']
 			print('Order {} saved as concept for: \n Customer: num - {}, id - {}'.format(orderID, customer_num, customer_id))
-			return (customer_id, orderID, ordernum, orderstatus, orderdetails, order_weddingdate)
+			return (customer_id, orderID, ordernum, orderstatus, orderdetails, order_weddingdate, order_pwsdate, order_romdate)
 		else:
 			print('failed in order "Saving" status: {}'.format(status))
 			message = 'failed in order "Saving" status: {}'.format(status)
-			return (message, None, None, None, None, None)
+			return (message, None, None, None, None, None, None, None)
 	else:
 		print('failed in order "Creation" status: {}'.format(status))
 		message = 'failed in order "Creation" status: {}'.format(status)
-		return (message, None, None, None, None, None)
+		return (message, None, None, None, None, None, None, None)
 
 def insertNewOrder_in_GS(customer_id="", orderID="", ordernum="", orderstatus="",
-	orderdetails="", order_weddingdate="", gsht="booqable orders",):
+	orderdetails="", order_weddingdate="", order_pwsdate="", order_romdate="", 
+	gsht="booqable orders",):
 
 	bqOrdersht = logtosheet(gsht)
 
-	result = bqOrdersht.insert_row([customer_id, orderID, ordernum, orderstatus, 
-	orderdetails, order_weddingdate], 2)
+	eventdate = ""
+	if order_weddingdate != "" and order_weddingdate is not None:
+		eventdate = order_weddingdate
+	elif order_pwsdate != "" and order_pwsdate is not None:
+		eventdate = order_pwsdate
+	elif order_romdate != "" and order_romdate is not None:
+		eventdate = order_romdate
+	else:
+		eventdate = ""
+
+	result = bqOrdersht.insert_row([customer_id, orderID, int(ordernum), orderstatus, 
+	orderdetails, order_weddingdate, order_pwsdate, order_romdate, eventdate], 2)
 	return result
 
 def updateOrder_in_GS(ordernum="", orderID="", gsht="booqable orders", orderIDcolnum=2, ordernumcolnum=3):
@@ -538,7 +617,7 @@ def updateOrder_in_GS(ordernum="", orderID="", gsht="booqable orders", orderIDco
 	else:
 		print('somehow did not search booqable for order.')
 		message = "corrupted order number and order id."
-		return (message, None, None, None, None, None, None)
+		return (message, None, None, None, None, None, None, None, None)
 
 	if str(status)[0] == '2':
 		data = r.data # get json respons
@@ -555,19 +634,38 @@ def updateOrder_in_GS(ordernum="", orderID="", gsht="booqable orders", orderIDco
 			for i in json_obj['order']['lines']:
 				orderdetails += str(i['title']) + ", "
 
+
 		order_weddingdate = ""
+		order_pwsdate = ""
+		order_romdate = ""
+
 		# iterate through to find order wedding date property
 		if len(json_obj['order']['properties'])>0:
 			for i in json_obj['order']['properties']:
 				if i['name'] == 'Wedding Date':
-					order_weddingdate = i['value']
+					order_weddingdate = i['value'].replace("(TBC)", "").split("to")[0].strip() # remove TBC
+				elif i['name'] == 'PWS Date':
+					order_pwsdate = i['value'].replace("(TBC)", "").split("to")[0].strip()
+				elif i['name'] == 'ROM Date':
+					order_romdate = i['value'].replace("(TBC)", "").split("to")[0].strip()
 
-		gsrowdata = (custID, orderID, ordernum, status, orderdetails, order_weddingdate)
+		eventdate = ""
+		if order_weddingdate != "" and order_weddingdate is not None:
+			eventdate = order_weddingdate
+		elif order_pwsdate != "" and order_pwsdate is not None:
+			eventdate = order_pwsdate
+		elif order_romdate != "" and order_romdate is not None:
+			eventdate = order_romdate
+		else:
+			eventdate = ""
+
+		gsrowdata = (custID, orderID, ordernum, status, orderdetails, 
+			order_weddingdate, order_pwsdate, order_romdate, eventdate)
 
 	else:	# did not find id in booqable
 		print('failed to retrieve {} from booqable status: {}'.format(paraused, status))
 		message = 'failed to retrieve {} from booqable status: {}'.format(paraused, status)
-		return (message, None, None, None, None, None, None)
+		return (message, None, None, None, None, None, None, None, None)
 	    
 	### === update GS ===
 	bqOrdersht = logtosheet(gsht)
@@ -590,7 +688,8 @@ def updateOrder_in_GS(ordernum="", orderID="", gsht="booqable orders", orderIDco
 		print('order updated on GS.')
 
 		# return row data
-		return (custID, orderID, ordernum, status, orderdetails, order_weddingdate, matchingrow)
+		return (custID, orderID, ordernum, status, orderdetails, order_weddingdate, 
+			order_pwsdate, order_romdate, matchingrow)
 
 	elif len(matchingordernumrow)>0:
 		matchingrow = matchingordernumrow[0] + 1
@@ -602,15 +701,18 @@ def updateOrder_in_GS(ordernum="", orderID="", gsht="booqable orders", orderIDco
 		print('order updated on GS.')
 
 		# return row data
-		return (custID, orderID, ordernum, status, orderdetails, order_weddingdate, matchingrow)
+		return (custID, orderID, ordernum, status, orderdetails, 
+			order_weddingdate, order_pwsdate, order_romdate, matchingrow)
 	
 	else: # if no such order exist in order sheet, insert order
 		print('no such order ID exist in Order Sheet.')
 		print('inserting new order')
 		insertNewOrder_in_GS(customer_id=custID, orderID=orderID, ordernum=ordernum, orderstatus=status,
-			orderdetails=orderdetails, order_weddingdate=order_weddingdate)
+			orderdetails=orderdetails, order_weddingdate=order_weddingdate, 
+			order_pwsdate=order_pwsdate, order_romdate=order_romdate)
 
-		message = (custID, orderID, ordernum, status, orderdetails, order_weddingdate, 2)
+		message = (custID, orderID, ordernum, status, orderdetails, 
+			order_weddingdate, order_pwsdate, order_romdate, 2)
 		return message
 
 
@@ -820,7 +922,7 @@ def submitformdetails(request):
 	if request.method == 'POST':
 		print('submitformdetails view reached..')
 
-		response_data = response_data = dealwithresponsedata(request.POST)
+		response_data = dealwithresponsedata(request.POST)
 		emailaddress = response_data.get('emailfield')
 		phone = response_data.get('phonenum')
 
@@ -849,9 +951,12 @@ def submitformdetails(request):
 						response_data['preferredoutfit'],
 						response_data['preferredoutOthers'],
 
+						response_data['preferredstyle'],
+						response_data['preferredstyleOthers'],
+
 						response_data['preferredNeckline'],
 						response_data['preferredNeckOthers'],
-						response_data['preferredoutOthers'],
+
 						response_data['attendant'],
 						response_data['additionalnotes'],
 						]
@@ -900,13 +1005,22 @@ def processorders(request):
 		emailaddress = response_data.get('emailfield')
 		phone = response_data.get('phonenum')
 
+		eventdict = {'weddingdate': None,
+					'PWS': None,
+					'ROMdate' : None,}
+
+		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=1)
+		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=2)
+		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=3)
+
 		# 1. check if order exist in GS
 		message = check_OrderNumorOrderID_exists_returnRowNum(custID=response_data['cust_id'])
 
 		if isinstance(message, int): # if available in GS, return order number
 			gsrownum = message
 			# get order number and order id
-			custID, orderID, ordernum, orderstatus, order_order, order_weddingdate = get_order_rowvalues_from_GS(gsrownum)
+			custID, orderID, ordernum, orderstatus, order_order, order_weddingdate, \
+			order_pwsdate, order_romdate = get_order_rowvalues_from_GS(gsrownum)
 
 			message = "Latest Order in GS at row {}, Order Number: {} Order Id: {}".format(gsrownum, 
 																							ordernum,
@@ -915,11 +1029,13 @@ def processorders(request):
 		else: # if does not have existing orders in GS,(can't check booqable as need order number)
 			
 			# create new order set in booqable
-			customer_id, orderID, ordernum, orderstatus, orderdetails, order_weddingdate = create_Order_in_booqable(custID=response_data['cust_id'],
-							weddingdate="") # TODO, update weddingdate
+			customer_id, orderID, ordernum, orderstatus, orderdetails, order_weddingdate, \
+			order_pwsdate, order_romdate = create_Order_in_booqable(custID=response_data['cust_id'],
+							weddingdate=eventdict.get("weddingdate",""), order_pwsdate=eventdict.get("PWS", ""))
 			# insert new order in GS
 			insertNewOrder_in_GS(customer_id=customer_id, orderID=orderID, ordernum=ordernum, 
-				orderstatus=orderstatus, orderdetails=orderdetails, order_weddingdate=order_weddingdate)
+				orderstatus=orderstatus, orderdetails=orderdetails, 
+				order_weddingdate=order_weddingdate, order_pwsdate=order_pwsdate, order_romdate=order_romdate)
 
 			message = "New Order Created under #{}, Order id: {}".format(ordernum,orderID)
 
@@ -975,8 +1091,8 @@ def updateorderinGSview(request):
 		# 2. locate order row in GS
 		# 3. update GS row.
 		# 4. if no row in GS, insert GS row.
-		custID, orderID, ordernum, status, orderdetails, \
-		order_weddingdate, matchingrow = updateOrder_in_GS(ordernum=ordernum, orderID=orderid )
+		custID, orderID, ordernum, status, orderdetails, order_weddingdate, \
+		order_pwsdate, order_romdate, matchingrow = updateOrder_in_GS(ordernum=ordernum, orderID=orderid )
 		if status is None:
 			message = custID
 		else:
@@ -1021,6 +1137,108 @@ def updatefittingdatesinGSview(request):
 			content_type="application/json")
 	else:
 		return HttpResponse(json.dumps({"fittingdates_msg": "not a POST request."}),
+			content_type="application/json")
+
+def retrieveformdetails(request):
+
+	if request.method == 'POST':
+		
+		email = request.POST.get('email', "")#.lower() # to lowercase?
+		phonenum = request.POST.get('phone', "")
+
+		# search by email
+		emailrowInt = check_email_in_GS_TabletForm(email=email)
+		phonenumrowInt = check_phonenum_in_GS_TabletForm(phonenum=phonenum)
+
+		tabletsht = logtosheet("Tablet Form")
+
+		if isinstance(emailrowInt, int):
+			# go to row and retrieve information
+			print("retrieving via email address")
+			tabletrowdetails = tabletsht.row_values(emailrowInt)
+
+			if len(tabletrowdetails) <24:
+				requiredpad = 24 - len(tabletrowdetails)
+				appendpad = [""] * requiredpad
+				tabletrowdetails.extend(appendpad)
+
+			message = {
+			'bridename' : tabletrowdetails[0],
+			'groomname' : tabletrowdetails[1],
+			'phonenum' :  tabletrowdetails[2],
+			'emailfield' : tabletrowdetails[3],
+			'howdidyouhear' : tabletrowdetails[4],
+			'eventdate1' :  tabletrowdetails[5],
+			'eventtype1' : tabletrowdetails[6],
+			'eventvenue1' : tabletrowdetails[7],
+			'eventdate2' :  tabletrowdetails[8],
+			'eventtype2' : tabletrowdetails[9],
+			'eventvenue2' : tabletrowdetails[10],
+			'eventdate3' :  tabletrowdetails[11],
+			'eventtype3' : tabletrowdetails[12],
+			'eventvenue3' : tabletrowdetails[13],
+			'requiredoutfit' : tabletrowdetails[14],
+			'noofgowns' : tabletrowdetails[15],
+			'preferredoutfit' : tabletrowdetails[16],
+			'preferredoutOthers' : tabletrowdetails[17],
+			'preferredstyle' : tabletrowdetails[18],
+			'preferredstyleOthers' : tabletrowdetails[19],
+			'preferredNeckline' : tabletrowdetails[20],
+			'preferredNeckOthers' : tabletrowdetails[21],
+
+			'attendant': tabletrowdetails[22],
+			'additionalnotes': tabletrowdetails[23],
+			}
+
+		elif isinstance(phonenumrowInt, int):
+			# go to row and retrieve information
+
+			print("retrieving via phone")
+			tabletrowdetails = tabletsht.row_values(phonenumrowInt)
+			print(tabletrowdetails)
+
+			if len(tabletrowdetails) <24:
+				requiredpad = 24 - len(tabletrowdetails)
+				appendpad = [""] * requiredpad
+				tabletrowdetails.extend(appendpad)
+
+			print(tabletrowdetails)
+			message = {
+			'bridename' : tabletrowdetails[0],
+			'groomname' : tabletrowdetails[1],
+			'phonenum' :  tabletrowdetails[2],
+			'emailfield' : tabletrowdetails[3],
+			'howdidyouhear' : tabletrowdetails[4],
+			'eventdate1' :  tabletrowdetails[5],
+			'eventtype1' : tabletrowdetails[6],
+			'eventvenue1' : tabletrowdetails[7],
+			'eventdate2' :  tabletrowdetails[8],
+			'eventtype2' : tabletrowdetails[9],
+			'eventvenue2' : tabletrowdetails[10],
+			'eventdate3' :  tabletrowdetails[11],
+			'eventtype3' : tabletrowdetails[12],
+			'eventvenue3' : tabletrowdetails[13],
+			'requiredoutfit' : tabletrowdetails[14],
+			'noofgowns' : tabletrowdetails[15],
+			'preferredoutfit' : tabletrowdetails[16],
+			'preferredoutOthers' : tabletrowdetails[17],
+			'preferredstyle' : tabletrowdetails[18],
+			'preferredstyleOthers' : tabletrowdetails[19],
+			'preferredNeckline' : tabletrowdetails[20],
+			'preferredNeckOthers' : tabletrowdetails[21],
+
+			'attendant': tabletrowdetails[22],
+			'additionalnotes': tabletrowdetails[23],
+			}
+
+		else:
+			message = {"error": "could not find email or phone in history sheet."}
+
+		return HttpResponse(json.dumps(message),
+			content_type="application/json")
+
+	else:
+		return HttpResponse(json.dumps({"retrieve_msg": "not a POST request."}),
 			content_type="application/json")
 
 
