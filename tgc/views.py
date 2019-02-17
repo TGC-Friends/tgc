@@ -1058,18 +1058,29 @@ def updatecustomerinGSview(request):
 		# 1. get order details from booqable.
 		email, custID, custname, custNum, custhp = searchForCustDetailsInBooqable(custNum=customernum)
 		if custNum is None:
-			message = email
+			message = email # is an error message
 
 		# 2. Update GS
 		else:
 			# 1. check if record is available in Customer Google Sheet
 			gsCust_CustIDrowNum = check_EmailorPhone_exists_returnRowNum(email=email, phone=custhp)
+			
 			# 2. process Customer Record, (if rowcheckresult is integer, then)
-			custFormMessage, availcustID = updateGS_CustomerForm(response_data= {'bridename': custname,
-																	'emailfield': email,
-																	'phonenum': custhp},
-												rowcheckresult=gsCust_CustIDrowNum)
-			message = custFormMessage
+			if not isinstance(gsCust_CustIDrowNum, int):
+				# insert row in GS sheet
+				insertNewCustID_in_GS(email=email,custID=custID, name=custname, custNum=custNum, phone=custhp)
+				message = "Customer #{}, id: {} exist in Booqable and created in GS in row 2".format(custNum, custID)
+			
+			else:
+				# update acct details
+				custFormMessage, availcustID = updateGS_CustomerForm(response_data= {'bridename': custname,
+																		'emailfield': email,
+																		'phonenum': custhp},
+													rowcheckresult=gsCust_CustIDrowNum)
+
+				message = custFormMessage
+			
+			
 
 		return HttpResponse(json.dumps({"customer_msg": message}),
 			content_type="application/json")
