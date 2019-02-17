@@ -82,6 +82,18 @@ def logtosheet(sheetname):
 	#	return None
 
 def dealwithresponsedata(responsedata):
+
+	eventdate1 = responsedata.get('eventdate1')
+	eventdate2 = responsedata.get('eventdate2')
+	eventdate3 = responsedata.get('eventdate3')
+
+	if eventdate1 != "" and is not None:
+		eventdate1 = datetime.datetime.strptime(eventdate1,'%d-%m-%Y').strftime('%d %b %y')
+	if eventdate2 != "" and is not None:
+		eventdate2 = datetime.datetime.strptime(eventdate2,'%d-%m-%Y').strftime('%d %b %y')
+	if eventdate3 != "" and is not None:
+		eventdate3 = datetime.datetime.strptime(eventdate3,'%d-%m-%Y').strftime('%d %b %y')
+
 	response_data = {
 			'bridename' : responsedata.get('bridename'),
 			'groomname' : responsedata.get('groomname'),
@@ -89,18 +101,15 @@ def dealwithresponsedata(responsedata):
 			'emailfield' : responsedata.get('emailfield',""),#.lower(), # lowercase all
 			'howdidyouhear' : responsedata.get('howdidyouhear'),
 			#'eventdate1' : responsedata.get('eventdate1'),
-			'eventdate1' :  datetime.datetime.strptime(responsedata.get('eventdate1'),
-				'%d-%m-%Y').strftime('%d %b %y'),
+			'eventdate1' :  eventdate1,
 			'eventtype1' : responsedata.get('eventtype1'),
 			'eventvenue1' : responsedata.get('eventvenue1'),
 			#'eventdate2' : responsedata.get('eventdate2'),
-			'eventdate2' :  datetime.datetime.strptime(responsedata.get('eventdate2'),
-				'%d-%m-%Y').strftime('%d %b %y'),
+			'eventdate2' :  eventdate2,
 			'eventtype2' : responsedata.get('eventtype2'),
 			'eventvenue2' : responsedata.get('eventvenue2'),
 			#'eventdate3' : responsedata.get('eventdate3'),
-			'eventdate3' :  datetime.datetime.strptime(responsedata.get('eventdate3'),
-				'%d-%m-%Y').strftime('%d %b %y'),
+			'eventdate3' :  eventdate3,
 			'eventtype3' : responsedata.get('eventtype3'),
 			'eventvenue3' : responsedata.get('eventvenue3'),
 			'requiredoutfit' : responsedata.get('requiredoutfit').replace("false,","").replace("false",""),
