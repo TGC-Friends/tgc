@@ -1018,7 +1018,7 @@ def processorders(request):
 					'PWS': None,
 					'ROMdate' : None,}
 
-		eventdict = updateEventDict(eventdict=eventdict, respons_edata=response_data, eventnum=1)
+		eventdict = updateEventDict(eventdict=eventdict, response_data=response_data, eventnum=1)
 		eventdict = updateEventDict(eventdict=eventdict, response_data=response_data, eventnum=2)
 		eventdict = updateEventDict(eventdict=eventdict, response_data=response_data, eventnum=3)
 
