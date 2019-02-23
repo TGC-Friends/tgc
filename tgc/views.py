@@ -130,7 +130,7 @@ def dealwithresponsedata(responsedata):
 	return response_data
 
 
-def updateEventDict(eventdict, responsedata, eventnum=1):
+def updateEventDict(eventdict, response_data, eventnum=1):
 
 	#eventdict = {'weddingdate': None,'PWS': None, 'ROMdate' : None,}
 
@@ -1018,9 +1018,9 @@ def processorders(request):
 					'PWS': None,
 					'ROMdate' : None,}
 
-		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=1)
-		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=2)
-		eventdict = updateEventDict(eventdict=eventdict, responsedata=response_data, eventnum=3)
+		eventdict = updateEventDict(eventdict=eventdict, respons_edata=response_data, eventnum=1)
+		eventdict = updateEventDict(eventdict=eventdict, response_data=response_data, eventnum=2)
+		eventdict = updateEventDict(eventdict=eventdict, response_data=response_data, eventnum=3)
 
 		# 1. check if order exist in GS
 		message = check_OrderNumorOrderID_exists_returnRowNum(custID=response_data['cust_id'])
