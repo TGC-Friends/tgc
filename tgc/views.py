@@ -134,14 +134,14 @@ def updateEventDict(eventdict, response_data, eventnum=1):
 
 	#eventdict = {'weddingdate': None,'PWS': None, 'ROMdate' : None,}
 
-	if response_data.get('eventtype'+eventnum) == "Actual":
-		eventdict['weddingdate'] = response_data.get('eventdate'+eventnum)
+	if response_data.get('eventtype'+str(eventnum)) == "Actual":
+		eventdict['weddingdate'] = response_data.get('eventdate'+str(eventnum))
 
-	if response_data.get('eventtype'+eventnum) == "PWS":
-		eventdict['PWS'] = response_data.get('eventdate'+eventnum)
+	if response_data.get('eventtype'+str(eventnum)) == "PWS":
+		eventdict['PWS'] = response_data.get('eventdate'+str(eventnum))
 
-	if response_data.get('eventtype'+eventnum) == "ROM":
-		eventdict['ROMdate'] = response_data.get('eventdate'+eventnum)
+	if response_data.get('eventtype'+str(eventnum)) == "ROM":
+		eventdict['ROMdate'] = response_data.get('eventdate'+str(eventnum))
 
 	return eventdict
 
