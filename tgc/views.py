@@ -538,17 +538,20 @@ def create_Order_in_booqable(custID="", weddingdate="", order_pwsdate="", order_
 								"properties_attributes": [{
 										'type': 'Property::TextField',
 										'name': 'Wedding Date',
-										'value': weddingdate, },
+										'value': weddingdate, 
+										'show_on': ['quote', 'invoice'],},
 
 										{
 										'type': 'Property::TextField',
 										'name': 'PWS Date',
-										'value': order_pwsdate, },
+										'value': order_pwsdate, 
+										'show_on': ['quote', 'invoice'],},
 
 										{
 										'type': 'Property::TextField',
 										'name': 'ROM Date',
-										'value': order_romdate, },
+										'value': order_romdate, 
+										'show_on': ['quote', 'invoice'],},
 
 									],}
 								})
