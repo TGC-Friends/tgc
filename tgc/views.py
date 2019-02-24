@@ -19,6 +19,8 @@ from gspread_dataframe import set_with_dataframe, get_as_dataframe
 import pandas as pd
 # For google calendar
 import datetime
+from dateutil.parser import parse
+
 import pickle
 import os.path
 from googleapiclient.discovery import build
@@ -88,11 +90,28 @@ def dealwithresponsedata(responsedata):
 	eventdate3 = responsedata.get('eventdate3')
 
 	if (eventdate1 != "") and eventdate1 is not None:
-		eventdate1 = datetime.datetime.strptime(eventdate1,'%d-%m-%Y').strftime('%d %b %y')
+		try:
+			eventdate1 = datetime.datetime.strptime(eventdate1,'%d-%m-%Y').strftime('%d %b %y')
+		except:
+			eventdate1 = parse(eventdate1).strftime('%d %b %y')
+		finally:
+			eventdate1 = parse(eventdate1).strftime('%d %b %y')
+
 	if (eventdate2 != "") and eventdate2 is not None:
-		eventdate2 = datetime.datetime.strptime(eventdate2,'%d-%m-%Y').strftime('%d %b %y')
+		try:
+			eventdate2 = datetime.datetime.strptime(eventdate2,'%d-%m-%Y').strftime('%d %b %y')
+		except:
+			eventdate2 = parse(eventdate2).strftime('%d %b %y')
+		finally:
+			eventdate2 = parse(eventdate2).strftime('%d %b %y')
+
 	if (eventdate3 != "") and eventdate3 is not None:
-		eventdate3 = datetime.datetime.strptime(eventdate3,'%d-%m-%Y').strftime('%d %b %y')
+		try:
+			eventdate3 = datetime.datetime.strptime(eventdate3,'%d-%m-%Y').strftime('%d %b %y')
+		except:
+			eventdate3 = parse(eventdate3).strftime('%d %b %y')
+		finally:
+			eventdate3 = parse(eventdate3).strftime('%d %b %y')
 
 	response_data = {
 			'bridename' : responsedata.get('bridename'),
