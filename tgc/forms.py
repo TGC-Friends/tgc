@@ -200,8 +200,9 @@ class initialForm(forms.Form):
 																border-bottom: 1px solid grey;'}))
 
 	attendant = forms.ChoiceField(label='Attendant',
-									choices=[ ('Shermin','Shermin'),
+									choices=[ ('Kelly','Kelly'),
 											('Natalie','Natalie'),
+											('Jenn','Jenn'),
 											('Michelle', 'Michelle'),
 											],
 								widget=forms.Select(
