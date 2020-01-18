@@ -200,7 +200,8 @@ class initialForm(forms.Form):
 																border-bottom: 1px solid grey;'}))
 
 	attendant = forms.ChoiceField(label='Attendant',
-									choices=[ ('Kelly','Kelly'),
+									choices=[ ('Shermin','Shermin'),
+											('Kelly','Kelly'),
 											('Natalie','Natalie'),
 											('Jenn','Jenn'),
 											('Michelle', 'Michelle'),
