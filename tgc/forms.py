@@ -205,7 +205,8 @@ class initialForm(forms.Form):
 											#('Natalie','Natalie'),
 											('Shermin','Shermin'),
 											('Jenn','Jenn'),
-											('Cheryl', 'Cheryl'),
+											#('Cheryl', 'Cheryl'),
+											('Vivien', 'Vivien'),
 											('Michelle', 'Michelle'),
 											],
 								widget=forms.Select(
