@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-import django_heroku
+import django_on_heroku
 import os
 
 
@@ -135,4 +135,4 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn', 'static_root')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static_cdn', 'media_root')
 
-django_heroku.settings(locals())
+django_on_heroku.settings(locals())
