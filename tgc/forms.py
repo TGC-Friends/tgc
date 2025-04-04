@@ -208,8 +208,8 @@ class initialForm(forms.Form):
 											#('Cheryl', 'Cheryl'),
 											('Vivien', 'Vivien'),
 											('Michelle', 'Michelle'),
-											#('Stephy', 'Stephy')
-											('Skylar', 'Skylar'),
+											#('Stephy', 'Stephy'),
+											('Skylar', 'Skylar')
 											],
 								widget=forms.Select(
 									attrs={'id':'attendant',})
