@@ -204,12 +204,12 @@ class initialForm(forms.Form):
 											('Kelly','Kelly'),
 											#('Natalie','Natalie'),
 											('Shermin','Shermin'),
-											('Jenn','Jenn'),
+											#('Jenn','Jenn'),
 											#('Cheryl', 'Cheryl'),
 											('Vivien', 'Vivien'),
 											('Michelle', 'Michelle'),
-											('Stephy', 'Stephy')
-											#('Skylar', 'Skylar')
+											#('Stephy', 'Stephy')
+											('Skylar', 'Skylar')
 											],
 								widget=forms.Select(
 									attrs={'id':'attendant',})
