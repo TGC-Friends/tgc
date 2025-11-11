@@ -32,22 +32,55 @@ import re
 
 # for file paths
 import os
+import json
 #from django.conf import settings
 
 # inits
 http = urllib3.PoolManager()
 apikey= 'f60d7f0857a3be54cd7b6427f7e61e9c'
 keysfolder = os.path.join(os.path.abspath(os.path.dirname(__file__)),'keys')
-googlesheetkeypath = keysfolder+"/tgc-01-bc70985442c3.json"
+# Default to new key file, but prefer environment variable
+googlesheetkeypath = keysfolder+"/tgc-01-2025November.json"
 googlecalendartokenpath = keysfolder+"/tgcCalendarToken.pickle"
 # googlesheet inits and functions
 
 ## === Functions === ##
-def initGS(jsonfile="tgc-01-bc70985442c3.json"):
+def initGS(jsonfile=None):
+    """
+    Initialize Google Sheets client.
+    Priority:
+    1. Environment variable GOOGLE_SHEETS_CREDENTIALS (JSON string)
+    2. File path from jsonfile parameter
+    3. Default file path (tgc-01-2025November.json)
+    """
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
-    gs_credentials = ServiceAccountCredentials.from_json_keyfile_name(jsonfile,scope)
+    
+    # Try environment variable first (Heroku config vars)
+    if os.environ.get('GOOGLE_SHEETS_CREDENTIALS'):
+        try:
+            creds_json = json.loads(os.environ['GOOGLE_SHEETS_CREDENTIALS'])
+            gs_credentials = ServiceAccountCredentials.from_json_keyfile_dict(creds_json, scope)
+            gc = gspread.authorize(gs_credentials)
+            print("Google Sheets initialized from environment variable")
+            return gc
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error parsing GOOGLE_SHEETS_CREDENTIALS from env var: {e}")
+            print("Falling back to file-based credentials...")
+    
+    # Fall back to file-based credentials
+    if jsonfile is None:
+        jsonfile = googlesheetkeypath
+    elif not os.path.isabs(jsonfile):
+        # If relative path, make it relative to keys folder
+        jsonfile = os.path.join(keysfolder, jsonfile)
+    
+    if not os.path.exists(jsonfile):
+        raise FileNotFoundError(f"Google Sheets credentials file not found: {jsonfile}")
+    
+    gs_credentials = ServiceAccountCredentials.from_json_keyfile_name(jsonfile, scope)
     gc = gspread.authorize(gs_credentials)
+    print(f"Google Sheets initialized from file: {jsonfile}")
     return gc
 
 # google calendar init
@@ -62,26 +95,56 @@ def initGC():
 		return "google calendar token pickle missing."
 
 
-#print(settings.BASE_DIR + "/keys/tgc-01-bc70985442c3.json")
+#print(settings.BASE_DIR + "/keys/tgc-01-2025November.json")
 print(keysfolder)
 
-gc = initGS(jsonfile=googlesheetkeypath)
-wos = gc.open("Wedding Order Sheet")
+# Lazy initialization - don't initialize at module load to prevent startup errors
+gc = None
+wos = None
+
+def get_gc():
+	"""Get or initialize Google Sheets client"""
+	global gc
+	if gc is None:
+		try:
+			# initGS() will automatically check env vars first, then fall back to file
+			gc = initGS()
+		except Exception as e:
+			print(f"Error initializing Google Sheets: {e}")
+			raise
+	return gc
+
+def get_wos():
+	"""Get or initialize Wedding Order Sheet"""
+	global wos
+	if wos is None:
+		try:
+			gc = get_gc()
+			wos = gc.open("Wedding Order Sheet")
+		except Exception as e:
+			print(f"Error opening Wedding Order Sheet: {e}")
+			raise
+	return wos
 
 def logtosheet(sheetname):
-	global gc
-	global wos
 	try:
+		wos = get_wos()
 		sheet = wos.worksheet(sheetname)
 		return sheet
-	except:
-		gc = initGS(jsonfile=googlesheetkeypath)
-		wos = gc.open("Wedding Order Sheet")
-		sheet = wos.worksheet(sheetname)
-		return sheet
-	#finally:
-	#	print('Cannot Login to Google Sheet Name')
-	#	return None
+	except Exception as e:
+		print(f"Error accessing sheet {sheetname}: {e}")
+		# Try to reinitialize
+		global gc, wos
+		gc = None
+		wos = None
+		try:
+			gc = get_gc()
+			wos = get_wos()
+			sheet = wos.worksheet(sheetname)
+			return sheet
+		except Exception as e2:
+			print(f"Retry failed: {e2}")
+			raise
 
 def dealwithresponsedata(responsedata):
 
