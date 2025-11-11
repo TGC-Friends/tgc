@@ -127,6 +127,7 @@ def get_wos():
 	return wos
 
 def logtosheet(sheetname):
+	global gc, wos
 	try:
 		wos = get_wos()
 		sheet = wos.worksheet(sheetname)
@@ -134,7 +135,6 @@ def logtosheet(sheetname):
 	except Exception as e:
 		print(f"Error accessing sheet {sheetname}: {e}")
 		# Try to reinitialize
-		global gc, wos
 		gc = None
 		wos = None
 		try:
