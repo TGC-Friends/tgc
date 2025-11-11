@@ -1,9 +1,9 @@
+/* React DatePicker Styles */
+@import 'react-datepicker/dist/react-datepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* React DatePicker Styles */
-@import 'react-datepicker/dist/react-datepicker.css';
 
 body {
   margin: 0;

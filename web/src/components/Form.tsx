@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormData as FormDataType, ATTENDANTS, EVENT_TYPES } from '../types';
+import { FormData as FormDataType, ATTENDANTS } from '../types';
 import { 
   submitFormDetails, 
   processCustomerAccount, 
@@ -96,20 +96,38 @@ function Form() {
         setStatusMessage(response.error);
       } else {
         // Convert string arrays back to arrays
+        // The API returns data where arrays might be comma-separated strings
+        const formData = response as any; // API may return strings for arrays
         const processedData: FormDataType = {
-          ...response,
-          requiredoutfit: typeof response.requiredoutfit === 'string' 
-            ? response.requiredoutfit.split(',').filter(Boolean)
-            : response.requiredoutfit || [],
-          preferredoutfit: typeof response.preferredoutfit === 'string'
-            ? response.preferredoutfit.split(',').filter(Boolean)
-            : response.preferredoutfit || [],
-          preferredstyle: typeof response.preferredstyle === 'string'
-            ? response.preferredstyle.split(',').filter(Boolean)
-            : response.preferredstyle || [],
-          preferredNeckline: typeof response.preferredNeckline === 'string'
-            ? response.preferredNeckline.split(',').filter(Boolean)
-            : response.preferredNeckline || [],
+          ...formData,
+          requiredoutfit: (() => {
+            const value = formData.requiredoutfit;
+            if (typeof value === 'string') {
+              return value.split(',').filter(Boolean);
+            }
+            return Array.isArray(value) ? value : [];
+          })(),
+          preferredoutfit: (() => {
+            const value = formData.preferredoutfit;
+            if (typeof value === 'string') {
+              return value.split(',').filter(Boolean);
+            }
+            return Array.isArray(value) ? value : [];
+          })(),
+          preferredstyle: (() => {
+            const value = formData.preferredstyle;
+            if (typeof value === 'string') {
+              return value.split(',').filter(Boolean);
+            }
+            return Array.isArray(value) ? value : [];
+          })(),
+          preferredNeckline: (() => {
+            const value = formData.preferredNeckline;
+            if (typeof value === 'string') {
+              return value.split(',').filter(Boolean);
+            }
+            return Array.isArray(value) ? value : [];
+          })(),
         };
         setFormData(processedData);
         setStatusMessage('Record Retrieved. See Above.');
