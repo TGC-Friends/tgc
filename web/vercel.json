@@ -3,6 +3,44 @@
   "outputDirectory": "dist",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/submitformdetails",
+      "destination": "/api?endpoint=submitformdetails"
+    },
+    {
+      "source": "/api/processcustomeracct",
+      "destination": "/api?endpoint=processcustomeracct"
+    },
+    {
+      "source": "/api/processorders",
+      "destination": "/api?endpoint=processorders"
+    },
+    {
+      "source": "/api/retrieveformdetails",
+      "destination": "/api?endpoint=retrieveformdetails"
+    },
+    {
+      "source": "/api/updatecustomerings",
+      "destination": "/api?endpoint=updatecustomerings"
+    },
+    {
+      "source": "/api/updateorderings",
+      "destination": "/api?endpoint=updateorderings"
+    },
+    {
+      "source": "/api/updateinvoiceings",
+      "destination": "/api?endpoint=updateinvoiceings"
+    },
+    {
+      "source": "/api/updatefittingdatesings",
+      "destination": "/api?endpoint=updatefittingdatesings"
+    },
+    {
+      "source": "/api/test",
+      "destination": "/api?endpoint=test"
+    }
+  ]
 }
 
