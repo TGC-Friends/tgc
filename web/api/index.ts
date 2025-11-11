@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { processFormData, updateEventDict } from './utils/dateUtils';
-import { getWorksheet, findRowByValue, getRowValues, insertRow, updateRow } from './utils/googleSheets';
-import { createCustomer, getCustomer, createOrder, getOrder, getInvoice } from './utils/booqable';
-import { updateFittingDates } from './utils/googleCalendar';
+import { processFormData, updateEventDict } from './utils/dateUtils.js';
+import { findRowByValue, getRowValues, insertRow, updateRow } from './utils/googleSheets.js';
+import { createCustomer, getCustomer, createOrder, getOrder, getInvoice } from './utils/booqable.js';
+import { updateFittingDates } from './utils/googleCalendar.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Get the endpoint from query parameter or path
