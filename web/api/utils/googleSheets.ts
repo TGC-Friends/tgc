@@ -17,6 +17,11 @@ export async function initGoogleSheets() {
     throw new Error('Google Sheets credentials not configured');
   }
 
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID || '';
+  if (!spreadsheetId) {
+    throw new Error('GOOGLE_SHEET_ID environment variable is not set');
+  }
+
   const auth = new JWT({
     email: credentials.client_email,
     key: credentials.private_key.replace(/\\n/g, '\n'),
@@ -28,10 +33,16 @@ export async function initGoogleSheets() {
 
   sheetsClient = google.sheets({ version: 'v4', auth });
   
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID || '';
-  spreadsheet = await sheetsClient.spreadsheets.get({
-    spreadsheetId,
-  });
+  try {
+    spreadsheet = await sheetsClient.spreadsheets.get({
+      spreadsheetId,
+    });
+  } catch (error: any) {
+    if (error.code === 404) {
+      throw new Error(`Spreadsheet not found. Check that GOOGLE_SHEET_ID (${spreadsheetId.substring(0, 10)}...) is correct and the service account (${credentials.client_email}) has access to it.`);
+    }
+    throw new Error(`Failed to access Google Sheet: ${error.message}`);
+  }
 
   return { client: sheetsClient, spreadsheet };
 }
@@ -41,16 +52,25 @@ export async function getWorksheet(sheetName: string) {
   const spreadsheetId = process.env.GOOGLE_SHEET_ID || '';
 
   // Get all sheets to find the one we need
-  const sheets = await client.spreadsheets.get({
-    spreadsheetId,
-  });
+  let sheets;
+  try {
+    sheets = await client.spreadsheets.get({
+      spreadsheetId,
+    });
+  } catch (error: any) {
+    if (error.code === 404) {
+      throw new Error(`Spreadsheet not found. Check GOOGLE_SHEET_ID and service account permissions.`);
+    }
+    throw error;
+  }
 
   const sheet = sheets.data.sheets?.find(
     (s: any) => s.properties?.title === sheetName
   );
 
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found`);
+    const availableSheets = sheets.data.sheets?.map((s: any) => s.properties?.title).join(', ') || 'none';
+    throw new Error(`Worksheet "${sheetName}" not found in spreadsheet. Available sheets: ${availableSheets}`);
   }
 
   return { client, spreadsheetId, sheetName, sheetId: sheet.properties.sheetId };

@@ -34,7 +34,7 @@ api.interceptors.response.use(
 
 export const submitFormDetails = async (data: FormDataType): Promise<ApiResponse> => {
   // Send as JSON (serverless functions handle JSON better)
-  const response = await api.post('/api/submitformdetails', data, {
+  const response = await api.post('/submitformdetails', data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -43,7 +43,7 @@ export const submitFormDetails = async (data: FormDataType): Promise<ApiResponse
 };
 
 export const processCustomerAccount = async (data: FormDataType): Promise<ApiResponse> => {
-  const response = await api.post('/api/processcustomeracct', data, {
+  const response = await api.post('/processcustomeracct', data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -52,7 +52,7 @@ export const processCustomerAccount = async (data: FormDataType): Promise<ApiRes
 };
 
 export const processOrders = async (data: FormDataType): Promise<ApiResponse> => {
-  const response = await api.post('/api/processorders', data, {
+  const response = await api.post('/processorders', data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -61,7 +61,7 @@ export const processOrders = async (data: FormDataType): Promise<ApiResponse> =>
 };
 
 export const retrieveFormDetails = async (email: string, phone: string): Promise<FormDataType | { error: string }> => {
-  const response = await api.post('/api/retrieveformdetails', { email, phone }, {
+  const response = await api.post('/retrieveformdetails', { email, phone }, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -70,7 +70,7 @@ export const retrieveFormDetails = async (email: string, phone: string): Promise
 };
 
 export const updateCustomerInGS = async (customerNum: string): Promise<ApiResponse> => {
-  const response = await api.post('/api/updatecustomerings', { customernum: customerNum }, {
+  const response = await api.post('/updatecustomerings', { customernum: customerNum }, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -79,7 +79,7 @@ export const updateCustomerInGS = async (customerNum: string): Promise<ApiRespon
 };
 
 export const updateOrderInGS = async (orderNum: string, orderId: string): Promise<ApiResponse> => {
-  const response = await api.post('/api/updateorderings', { ordernum: orderNum, orderid: orderId }, {
+  const response = await api.post('/updateorderings', { ordernum: orderNum, orderid: orderId }, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -88,7 +88,7 @@ export const updateOrderInGS = async (orderNum: string, orderId: string): Promis
 };
 
 export const updateInvoiceInGS = async (invoiceNum: string): Promise<ApiResponse> => {
-  const response = await api.post('/api/updateinvoiceings', { invoicenum: invoiceNum }, {
+  const response = await api.post('/updateinvoiceings', { invoicenum: invoiceNum }, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -97,7 +97,7 @@ export const updateInvoiceInGS = async (invoiceNum: string): Promise<ApiResponse
 };
 
 export const updateFittingDatesInGS = async (): Promise<ApiResponse> => {
-  const response = await api.post('/api/updatefittingdatesings', {}, {
+  const response = await api.post('/updatefittingdatesings', {}, {
     headers: {
       'Content-Type': 'application/json',
     },
