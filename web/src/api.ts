@@ -8,6 +8,30 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, config.data);
+    return config;
+  },
+  (error) => {
+    console.error('API Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log(`API Response: ${response.config.url}`, response.data);
+    return response;
+  },
+  (error) => {
+    console.error(`API Error: ${error.config?.url}`, error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const submitFormDetails = async (data: FormDataType): Promise<ApiResponse> => {
   // Send as JSON (serverless functions handle JSON better)
   const response = await api.post('/submitformdetails', data, {

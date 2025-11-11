@@ -61,29 +61,35 @@ function Form() {
   };
 
   const handleSubmit = async () => {
+    console.log('Form submit clicked, starting submission...');
     setIsSubmitting(true);
     setStatusMessage('Checking records for registered values...');
     setAccountMessage('Checking Booqable for registered acct...');
     setOrderMessage('Checking for existing orders...');
 
     try {
+      console.log('Submitting form data:', formData);
       // Submit form details
       const tabletFormResponse = await submitFormDetails(formData);
+      console.log('Tablet form response:', tabletFormResponse);
       setStatusMessage(tabletFormResponse.tabletform_msg || 'Form submitted');
 
       // Process customer account
       const customerResponse = await processCustomerAccount(formData);
+      console.log('Customer response:', customerResponse);
       setAccountMessage(customerResponse.custform_msg || 'Customer processed');
 
       // If customer ID is available, process orders
       if (customerResponse.availcustID) {
         const orderData = { ...formData, cust_id: customerResponse.availcustID };
         const orderResponse = await processOrders(orderData);
+        console.log('Order response:', orderResponse);
         setOrderMessage(orderResponse.orders_msg || 'Order processed');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting form:', error);
-      setStatusMessage('Error submitting form. Please try again.');
+      console.error('Error details:', error.response?.data || error.message);
+      setStatusMessage(`Error: ${error.message || 'Failed to submit form. Check console for details.'}`);
     } finally {
       setIsSubmitting(false);
     }
