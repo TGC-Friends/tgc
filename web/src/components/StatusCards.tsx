@@ -1,14 +1,9 @@
-import { useState } from 'react';
-
 interface StatusCardsProps {
   accountMessage: string;
   orderMessage: string;
 }
 
 function StatusCards({ accountMessage, orderMessage }: StatusCardsProps) {
-  const [accountExpanded, setAccountExpanded] = useState(false);
-  const [orderExpanded, setOrderExpanded] = useState(false);
-
   return (
     <>
       {/* Account Details Card */}
@@ -17,17 +12,9 @@ function StatusCards({ accountMessage, orderMessage }: StatusCardsProps) {
           <span>Account Details</span>
         </div>
         {accountMessage && (
-          <div className={`card-body p-3 ${accountExpanded ? '' : 'hidden'}`}>
+          <div className="card-body p-3">
             <span>{accountMessage}</span>
           </div>
-        )}
-        {accountMessage && (
-          <button
-            onClick={() => setAccountExpanded(!accountExpanded)}
-            className="w-full text-left p-2 text-sm text-blue-600 hover:bg-gray-50"
-          >
-            {accountExpanded ? 'Hide' : 'Show'} Details
-          </button>
         )}
       </div>
 
@@ -37,17 +24,9 @@ function StatusCards({ accountMessage, orderMessage }: StatusCardsProps) {
           <span>Order Details</span>
         </div>
         {orderMessage && (
-          <div className={`card-body p-3 ${orderExpanded ? '' : 'hidden'}`}>
+          <div className="card-body p-3">
             <span>{orderMessage}</span>
           </div>
-        )}
-        {orderMessage && (
-          <button
-            onClick={() => setOrderExpanded(!orderExpanded)}
-            className="w-full text-left p-2 text-sm text-blue-600 hover:bg-gray-50"
-          >
-            {orderExpanded ? 'Hide' : 'Show'} Details
-          </button>
         )}
       </div>
     </>
