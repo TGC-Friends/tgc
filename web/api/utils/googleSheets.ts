@@ -135,8 +135,67 @@ export async function updateCell(
   });
 }
 
-export async function insertRow(sheetName: string, values: any[], insertAfterRow: number = 1): Promise<void> {
+/**
+ * Converts a date string to a format Google Sheets recognizes as a date
+ * Supports formats like "dd MMM yy", "YYYY-MM-DD", "MM/DD/YYYY", etc.
+ */
+function formatDateForSheets(dateString: string): string | null {
+  if (!dateString || dateString.trim() === '') {
+    return null;
+  }
+
+  try {
+    // Try to parse various date formats
+    let date: Date;
+    
+    // Try "dd MMM yy" format (e.g., "15 Nov 25")
+    const shortDateMatch = dateString.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{2})$/);
+    if (shortDateMatch) {
+      const [, day, month, year] = shortDateMatch;
+      const monthMap: { [key: string]: string } = {
+        'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+        'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
+        'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+      };
+      const monthNum = monthMap[month.toLowerCase()];
+      const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
+      date = new Date(`${fullYear}-${monthNum}-${day.padStart(2, '0')}`);
+    } else {
+      // Try parsing as ISO date or other formats
+      date = new Date(dateString);
+    }
+
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+
+    // Format as YYYY-MM-DD (Google Sheets recognizes this as a date)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch (error) {
+    console.warn(`Failed to parse date: ${dateString}`, error);
+    return null;
+  }
+}
+
+export async function insertRow(
+  sheetName: string, 
+  values: any[], 
+  insertAfterRow: number = 1,
+  dateColumnIndices: number[] = []
+): Promise<void> {
   const { client, spreadsheetId, sheetId } = await getWorksheet(sheetName);
+
+  // Format dates in the values array
+  const formattedValues = values.map((value, index) => {
+    if (dateColumnIndices.includes(index + 1)) { // +1 because columns are 1-indexed
+      const formatted = formatDateForSheets(value);
+      return formatted !== null ? formatted : value;
+    }
+    return value;
+  });
 
   // Insert a new row
   await client.spreadsheets.batchUpdate({
@@ -159,36 +218,111 @@ export async function insertRow(sheetName: string, values: any[], insertAfterRow
 
   // Add values to the new row
   const columnLetter = String.fromCharCode(64 + 1);
-  const endColumnLetter = String.fromCharCode(64 + values.length);
+  const endColumnLetter = String.fromCharCode(64 + formattedValues.length);
   const range = `${sheetName}!${columnLetter}${insertAfterRow + 1}:${endColumnLetter}${insertAfterRow + 1}`;
 
+  // Use USER_ENTERED so Google Sheets interprets dates properly
   await client.spreadsheets.values.update({
     spreadsheetId,
     range,
-    valueInputOption: 'RAW',
+    valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [values],
+      values: [formattedValues],
     },
   });
+
+  // Set number format for date columns
+  if (dateColumnIndices.length > 0) {
+    const formatRequests = dateColumnIndices.map(colIndex => ({
+      repeatCell: {
+        range: {
+          sheetId,
+          startRowIndex: insertAfterRow,
+          endRowIndex: insertAfterRow + 1,
+          startColumnIndex: colIndex - 1, // Convert to 0-indexed
+          endColumnIndex: colIndex,
+        },
+        cell: {
+          userEnteredFormat: {
+            numberFormat: {
+              type: 'DATE',
+              pattern: 'dd MMM yy',
+            },
+          },
+        },
+        fields: 'userEnteredFormat.numberFormat',
+      },
+    }));
+
+    await client.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: formatRequests,
+      },
+    });
+  }
 }
 
 export async function updateRow(
   sheetName: string,
   rowIndex: number,
-  values: any[]
+  values: any[],
+  dateColumnIndices: number[] = []
 ): Promise<void> {
-  const { client, spreadsheetId } = await getWorksheet(sheetName);
+  const { client, spreadsheetId, sheetId } = await getWorksheet(sheetName);
+  
+  // Format dates in the values array
+  const formattedValues = values.map((value, index) => {
+    if (dateColumnIndices.includes(index + 1)) { // +1 because columns are 1-indexed
+      const formatted = formatDateForSheets(value);
+      return formatted !== null ? formatted : value;
+    }
+    return value;
+  });
+
   const columnLetter = String.fromCharCode(64 + 1);
-  const endColumnLetter = String.fromCharCode(64 + values.length);
+  const endColumnLetter = String.fromCharCode(64 + formattedValues.length);
   const range = `${sheetName}!${columnLetter}${rowIndex}:${endColumnLetter}${rowIndex}`;
 
+  // Use USER_ENTERED so Google Sheets interprets dates properly
   await client.spreadsheets.values.update({
     spreadsheetId,
     range,
-    valueInputOption: 'RAW',
+    valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [values],
+      values: [formattedValues],
     },
   });
+
+  // Set number format for date columns
+  if (dateColumnIndices.length > 0) {
+    const formatRequests = dateColumnIndices.map(colIndex => ({
+      repeatCell: {
+        range: {
+          sheetId,
+          startRowIndex: rowIndex - 1, // Convert to 0-indexed
+          endRowIndex: rowIndex,
+          startColumnIndex: colIndex - 1, // Convert to 0-indexed
+          endColumnIndex: colIndex,
+        },
+        cell: {
+          userEnteredFormat: {
+            numberFormat: {
+              type: 'DATE',
+              pattern: 'dd MMM yy',
+            },
+          },
+        },
+        fields: 'userEnteredFormat.numberFormat',
+      },
+    }));
+
+    await client.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: formatRequests,
+      },
+    });
+  }
 }
 

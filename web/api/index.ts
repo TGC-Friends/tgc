@@ -241,6 +241,7 @@ async function handleProcessOrders(req: VercelRequest, res: VercelResponse) {
       } else {
         const eventDate = eventDict.weddingdate || eventDict.PWS || eventDict.ROMdate || '';
         
+        // Columns 6, 7, 8, 9 are date columns (weddingDate, pwsDate, romDate, eventDate)
         await insertRow('booqable orders', [
           custId,
           orderResult.id,
@@ -251,7 +252,7 @@ async function handleProcessOrders(req: VercelRequest, res: VercelResponse) {
           eventDict.PWS || '',
           eventDict.ROMdate || '',
           eventDate,
-        ], 1);
+        ], 1, [6, 7, 8, 9]);
 
         message = `New Order Created under #${orderResult.number}, Order id: ${orderResult.id}`;
       }
@@ -461,11 +462,14 @@ async function handleUpdateOrderInGS(req: VercelRequest, res: VercelResponse) {
 
     let message = '';
 
+    // Columns 6, 7, 8, 9 are date columns (weddingDate, pwsDate, romDate, eventDate)
+    const dateColumns = [6, 7, 8, 9];
+    
     if (rowNum) {
-      await updateRow('booqable orders', rowNum, rowData);
+      await updateRow('booqable orders', rowNum, rowData, dateColumns);
       message = `Order updated in GS row ${rowNum}, for Order Number: ${orderNumber}, Order Id: ${orderID}`;
     } else {
-      await insertRow('booqable orders', rowData, 1);
+      await insertRow('booqable orders', rowData, 1, dateColumns);
       message = `Order updated in GS row 2, for Order Number: ${orderNumber}, Order Id: ${orderID}`;
     }
 
