@@ -17,7 +17,7 @@ import OfficialUseSection from './OfficialUseSection';
 import StatusCards from './StatusCards';
 import ManualUpdateCards from './ManualUpdateCards';
 import RetrieveSection from './RetrieveSection';
-import logoBlack from '../assets/images/logoBlack.png';
+import NewLogo from '../assets/images/NewLogo.png';
 
 const initialFormData: FormDataType = {
   bridename: '',
@@ -189,7 +189,7 @@ function Form() {
       {/* Logo */}
       <div className="flex justify-center my-3">
         <div className="w-1/2">
-          <img src={logoBlack} alt="The Gown Connoisseur" className="w-full" />
+          <img src={NewLogo} alt="The Gown Connoisseur" className="w-full" />
         </div>
       </div>
 
